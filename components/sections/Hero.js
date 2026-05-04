@@ -1,112 +1,212 @@
 "use client";
 
-import Button from '@/components/ui/Button';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function Hero() {
-  // Graceful, editorial timeline
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.3, delayChildren: 0.2 }
+const SLIDE_DURATION = 7000; // Slower, more cinematic duration (7s)
+
+// Cinematic Mock Data (Can be replaced with props later)
+const defaultSlides = [
+  {
+    id: "s1",
+    label: "The Manifesto",
+    title: "Redefining Luxury Grooming.",
+    description: "A sanctuary of precision engineering and aesthetic mastery in the heart of Prayagraj.",
+    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=2000&auto=format&fit=crop",
+    cta: "Reserve a Session",
+    href: "/book"
+  },
+  {
+    id: "s2",
+    label: "Color Alchemy",
+    title: "Vibrant. Restorative. Bespoke.",
+    description: "Global formulations from London and Milan, applied with architectural precision.",
+    image: "https://images.unsplash.com/photo-1595476108010-b4d1f10a5146?q=80&w=2000&auto=format&fit=crop",
+    cta: "Discover Alchemy",
+    href: "/services#color"
+  },
+  {
+    id: "s3",
+    label: "Bridal Couture",
+    title: "Flawless High-Definition Artistry.",
+    description: "Exclusive, private suite experiences curated for your most defining moments.",
+    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=2000&auto=format&fit=crop",
+    cta: "View Couture",
+    href: "/services#bridal"
+  }
+];
+
+export default function HeroSlider({ slides = defaultSlides }) {
+  const [current, setCurrent] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const timerRef = useRef(null);
+  const touchStartX = useRef(null);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const goTo = useCallback((index) => {
+    setCurrent(index);
+    clearTimeout(timerRef.current);
+  }, []);
+
+  // Handle auto-advance
+  useEffect(() => {
+    if (!isPlaying || slides.length === 0) return;
+    timerRef.current = setTimeout(() => {
+      setCurrent((c) => (c + 1) % slides.length);
+    }, SLIDE_DURATION);
+    return () => clearTimeout(timerRef.current);
+  }, [current, isPlaying, slides.length]);
+
+  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null || slides.length === 0) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      goTo(diff > 0
+        ? (current + 1) % slides.length
+        : (current - 1 + slides.length) % slides.length
+      );
     }
+    touchStartX.current = null;
   };
 
-  // High-fashion blur reveal (soft, elegant, breathing)
-  const cinematicReveal = {
-    hidden: { opacity: 0, y: 20, filter: 'blur(10px)' },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      filter: 'blur(0px)',
-      transition: { duration: 1.5, ease: [0.25, 0.1, 0.25, 1] } 
-    }
-  };
+  if (!slides || slides.length === 0) {
+    return <div className="w-full h-screen bg-luxury-black" />;
+  }
 
-  const fadeUpSoft = {
-    hidden: { opacity: 0, y: 15 },
-    visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" } }
-  };
+  const slide = slides[current];
 
   return (
-    <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center bg-luxury-black pt-20 overflow-hidden">
-      
-      {/* 1. Atmospheric Studio Lighting (Soft Gold & Blush Mix) */}
-      <div className="absolute inset-0 z-0 flex justify-center items-center pointer-events-none">
-        {/* Gold undertone */}
-        <motion.div 
-          animate={{ opacity: [0.05, 0.08, 0.05], scale: [1, 1.05, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute w-[80vw] h-[80vw] md:w-[45vw] md:h-[45vw] bg-luxury-gold rounded-full mix-blend-screen filter blur-[150px] md:blur-[200px]"
-        />
-        {/* Blush overglow for warmth */}
-        <motion.div 
-          animate={{ opacity: [0.02, 0.05, 0.02], scale: [1.05, 1, 1.05] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute w-[60vw] h-[60vw] md:w-[35vw] md:h-[35vw] bg-luxury-blush rounded-full mix-blend-screen filter blur-[120px] md:blur-[180px] translate-x-1/4 -translate-y-1/4"
-        />
-      </div>
-
-      {/* Main Content Container */}
-      <div className="relative z-10 text-center max-w-5xl mx-auto px-6 flex flex-col items-center gap-8 md:gap-12 w-full">
-        
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col items-center w-full">
-          
-          {/* SEO Optimized H1 with Cinematic Reveal */}
-          <div className="mb-6 md:mb-8 flex flex-col items-center space-y-1 md:space-y-2">
-            <motion.h1 variants={cinematicReveal} className="font-heading text-5xl sm:text-3xl md:text-4xl lg:text-[7.5rem] text-white tracking-tight leading-none font-light">
-              Redefining
-            </motion.h1>
-            <motion.h1 variants={cinematicReveal} className="font-heading text-5xl sm:text-6xl md:text-8xl lg:text-[7.5rem] text-luxury-gold italic tracking-tight leading-none pr-4 md:pr-8">
-              Luxury
-            </motion.h1>
-            <motion.h1 variants={cinematicReveal} className="font-heading text-5xl sm:text-6xl md:text-8xl lg:text-[7.5rem] text-white tracking-tight leading-none font-light">
-              Grooming.
-            </motion.h1>
+    <section
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      className="relative w-full h-[100svh] min-h-[600px] bg-luxury-black overflow-hidden flex flex-col"
+    >
+      {/* ─── Cinematic Backgrounds ─── */}
+      {slides.map((s, index) => {
+        const isActive = index === current;
+        return (
+          <div
+            key={s.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out z-0 ${
+              isActive ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {/* Subtle "Ken Burns" zoom effect on active slide */}
+            <motion.div
+              initial={false}
+              animate={isActive ? { scale: 1.05 } : { scale: 1 }}
+              transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <Image
+                src={s.image}
+                alt={s.title}
+                fill
+                priority={index === 0}
+                className="object-cover object-center grayscale-[20%]"
+                sizes="100vw"
+              />
+            </motion.div>
+            
+            {/* High-Fashion Vignette Overlays */}
+            {/* Bottom gradient for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-luxury-black via-black/40 to-transparent z-10" />
+            
+            {/* NEW: Top gradient shadow to protect the Logo and Navbar contrast */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/90 via-black/40 to-transparent h-48 md:h-64 z-10" />
+            
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#000_150%)] z-10" />
           </div>
-          
-          {/* Context Paragraph */}
-          <motion.p 
-            variants={fadeUpSoft} 
-            className="font-sans text-sm sm:text-base md:text-lg text-gray-300 max-w-[20rem] sm:max-w-xl md:max-w-2xl font-light tracking-wide leading-relaxed"
-          >
-            Experience bespoke styling and premium aesthetic treatments at Prayagraj’s most exclusive destination.
-          </motion.p>
+        );
+      })}
 
-          {/* Interactive CTAs - Elegant & Understated */}
-          <motion.div 
-            variants={fadeUpSoft} 
-            className="flex flex-col sm:flex-row gap-4 md:gap-6 mt-10 md:mt-14 mb-8 w-full sm:w-auto"
+      {/* ─── Editorial Text Overlay ─── */}
+      {/* NEW: Added pt-32 md:pt-48 to force space away from the header */}
+      <div className="relative z-20 flex-grow max-w-[1440px] mx-auto w-full px-6 lg:px-12 flex flex-col justify-end pb-32 md:pb-40 pt-22 md:pt-38">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-2xl"
           >
-            <Button href="/book" variant="primary" className="w-full sm:w-auto py-4 md:py-5 px-12 font-light">
-              Reserve
-            </Button>
-            <Button href="/services" variant="secondary" className="w-full sm:w-auto py-4 md:py-5 px-12 font-light border-white/20 text-white hover:border-luxury-gold hover:text-luxury-gold hover:bg-transparent">
-              View Menu
-            </Button>
+            <span className="flex items-center gap-4 text-luxury-gold font-sans text-[10px] md:text-xs tracking-[0.4em] uppercase mb-6 font-medium">
+              <span className="w-8 h-[1px] bg-luxury-gold"></span>
+              {slide.label}
+            </span>
+            
+            <h2 className="font-heading text-5xl md:text-7xl lg:text-8xl text-white leading-[0.95] tracking-tight mb-6 font-light drop-shadow-lg">
+              {slide.title}
+            </h2>
+            
+            <p className="font-sans text-gray-300 text-sm md:text-lg font-light leading-relaxed mb-10 max-w-lg">
+              {slide.description}
+            </p>
+
+            <Link
+              href={slide.href}
+              className="group inline-flex items-center justify-center gap-4 border border-white/20 bg-white/5 backdrop-blur-md text-white px-10 py-4 text-xs md:text-sm tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white hover:text-black"
+            >
+              {slide.cta}
+              <span className="transform transition-transform duration-500 group-hover:translate-x-1">→</span>
+            </Link>
           </motion.div>
-
-        </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* Elegant, Soft Scroll Indicator */}
-      {/* <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.5 }}
-        transition={{ delay: 2, duration: 1.5 }}
-        className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
-      >
-        <span className="text-[10px] md:text-xs uppercase tracking-[0.3em] font-sans text-gray-400 font-light">
-          Discover
-        </span>
-        <motion.div 
-          animate={{ height: ["0px", "40px", "0px"], opacity: [0, 1, 0], y: [0, 20, 40] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-          className="w-[1px] bg-luxury-gold"
-        />
-      </motion.div> */}
+      {/* ─── Minimalist Navigation Controls ─── */}
+      {/* <div className="absolute bottom-8 md:bottom-12 left-6 lg:left-12 z-30 flex items-center gap-8">
+        
+        <button
+          onClick={() => setIsPlaying((p) => !p)}
+          className="font-sans text-[9px] uppercase tracking-[0.3em] text-white/50 hover:text-white transition-colors"
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
 
+        <div className="flex gap-3 items-center">
+          {slides.map((_, i) => {
+            const isActive = i === current;
+            return (
+              <button
+                key={`nav-${i}`}
+                onClick={() => goTo(i)}
+                className="relative h-[2px] rounded-full overflow-hidden transition-all duration-500 bg-white/20"
+                style={{ width: isActive ? "48px" : "16px" }}
+                aria-label={`Go to slide ${i + 1}`}
+              >
+                {isActive && isPlaying && (
+                  <motion.div
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
+                    className="absolute top-0 left-0 h-full bg-luxury-gold"
+                  />
+                )}
+                {isActive && !isPlaying && (
+                  <div className="absolute top-0 left-0 h-full w-full bg-luxury-gold" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="font-heading text-sm text-white/50 italic tracking-widest hidden md:block">
+          0{current + 1} <span className="text-white/20 mx-1">/</span> 0{slides.length}
+        </div>
+      </div> */}
     </section>
   );
 }

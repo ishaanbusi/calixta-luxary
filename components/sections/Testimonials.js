@@ -1,107 +1,184 @@
 "use client";
 
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const testimonials = [
   {
-    id: 1,
+    id: "01",
     quote: "An absolute masterclass in structural styling. The attention to facial geometry and the sheer exclusivity of the experience is unmatched anywhere in Prayagraj.",
     author: "Aanya S.",
-    service: "Signature Styling Client",
-    accent: "text-luxury-gold"
+    service: "Signature Styling Client"
   },
   {
-    id: 2,
+    id: "02",
     quote: "They handled my bridal couture makeup with incredible precision. The private luxury suite experience made the entire day feel flawless and elite.",
     author: "Meera R.",
-    service: "Bridal Couture Client",
-    accent: "text-luxury-blush"
+    service: "Bridal Couture Client"
   },
   {
-    id: 3,
+    id: "03",
     quote: "The advanced color alchemy completely transformed my aesthetic. The exclusive use of premium global products shows their uncompromising commitment to high-end standards.",
     author: "Priya V.",
-    service: "Color Alchemy Client",
-    accent: "text-white"
+    service: "Color Alchemy Client"
   }
 ];
 
+const AUTOPLAY_DURATION = 8000;
+
 export default function Testimonials() {
+  const [current, setCurrent] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const timerRef = useRef(null);
+
+  // Cinematic Auto-advance logic
+  useEffect(() => {
+    if (isHovered) return;
+    
+    timerRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % testimonials.length);
+    }, AUTOPLAY_DURATION);
+    
+    return () => clearInterval(timerRef.current);
+  }, [isHovered]);
+
+  const handleManualChange = (index) => {
+    setCurrent(index);
+    clearInterval(timerRef.current);
+  };
+
+  const quoteVariants = {
+    hidden: { opacity: 0, y: 20, filter: 'blur(10px)' },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      filter: 'blur(0px)',
+      transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] } 
+    },
+    exit: { 
+      opacity: 0, 
+      y: -20, 
+      filter: 'blur(10px)',
+      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } 
+    }
+  };
+
   return (
-    <section id="testimonials" className="py-24 md:py-40 px-6 bg-luxury-black overflow-hidden">
-      <div className="max-w-7xl mx-auto">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center mb-20 md:mb-32">
-          <motion.span 
-            initial={{ opacity: 0, letterSpacing: "0.1em" }}
-            whileInView={{ opacity: 1, letterSpacing: "0.4em" }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-            className="text-luxury-gold font-sans text-[10px] md:text-xs uppercase mb-6 font-medium"
-          >
-            Verified Experiences
-          </motion.span>
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="font-heading text-5xl md:text-7xl text-white tracking-tight leading-none"
-          >
-            Words of <span className="text-luxury-gold italic">Distinction.</span>
-          </motion.h2>
+    <section 
+      id="testimonials" 
+      className="relative py-24 md:py-40 px-6 bg-[#050505] overflow-hidden border-t border-white/5"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      
+      {/* ─── Ambient Atmospheric Lighting ─── */}
+      <div className="absolute top-1/2 right-0 w-[60vw] h-[60vw] bg-luxury-gold rounded-full mix-blend-screen filter blur-[250px] opacity-[0.02] pointer-events-none -translate-y-1/2 translate-x-1/3" />
+
+      <div className="max-w-[1440px] mx-auto relative z-10 lg:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+          
+          {/* ─── Left Column: Sticky Editorial Index (5 Columns) ─── */}
+          <div className="lg:col-span-5 relative flex flex-col justify-between">
+            <div>
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1 }}
+                className="flex items-center gap-4 mb-6"
+              >
+                <span className="w-8 h-[1px] bg-luxury-gold" />
+                <span className="text-luxury-gold font-sans text-[10px] md:text-xs tracking-[0.4em] uppercase font-medium">
+                  Verified Experiences
+                </span>
+              </motion.div>
+              
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className="font-heading text-5xl md:text-6xl lg:text-7xl text-white leading-[0.95] tracking-tight font-light mb-12"
+              >
+                Words of <br />
+                <span className="text-luxury-gold italic">Distinction.</span>
+              </motion.h2>
+            </div>
+
+            {/* Custom Interactive Index Nav */}
+            <div className="flex flex-col gap-4 border-l border-white/5 pl-6 mt-8 md:mt-16">
+              {testimonials.map((t, index) => {
+                const isActive = current === index;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => handleManualChange(index)}
+                    className="group flex items-center gap-6 text-left py-2"
+                  >
+                    <span className={`font-sans text-[9px] uppercase tracking-[0.3em] font-medium transition-colors duration-500 w-6 ${isActive ? 'text-luxury-gold' : 'text-gray-600 group-hover:text-gray-400'}`}>
+                      {t.id}
+                    </span>
+                    
+                    {/* Architectural Progress/Active Line */}
+                    <span className="relative w-8 md:w-12 h-[1px] bg-white/10 overflow-hidden">
+                      {isActive ? (
+                        <motion.span 
+                          initial={{ width: 0 }}
+                          animate={{ width: "100%" }}
+                          transition={{ duration: AUTOPLAY_DURATION / 1000, ease: "linear" }}
+                          className="absolute left-0 top-0 h-full bg-luxury-gold"
+                        />
+                      ) : (
+                        <span className="absolute left-0 top-0 h-full w-0 bg-white/30 transition-all duration-300 group-hover:w-full" />
+                      )}
+                    </span>
+
+                    <span className={`font-heading text-lg md:text-xl transition-colors duration-500 ${isActive ? 'text-white' : 'text-gray-600 group-hover:text-gray-300'}`}>
+                      {t.author}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ─── Right Column: Cinematic Quote Display (7 Columns) ─── */}
+          <div className="lg:col-span-7 relative min-h-[350px] md:min-h-[400px] flex items-center lg:border-l lg:border-white/5 lg:pl-24">
+            
+            {/* Elegant Watermark Quote Icon */}
+            <div className="absolute top-0 left-0 lg:left-16 text-[150px] md:text-[250px] font-heading text-white/[0.02] pointer-events-none leading-none select-none">
+              &ldquo;
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current}
+                variants={quoteVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="relative z-10 w-full"
+              >
+                <blockquote className="flex flex-col gap-10 md:gap-16">
+                  <p className="font-heading text-2xl md:text-4xl lg:text-[2.75rem] text-gray-200 leading-[1.3] font-light tracking-tight">
+                    {testimonials[current].quote}
+                  </p>
+                  
+                  <footer className="flex flex-col gap-2 border-t border-white/10 pt-6 max-w-sm">
+                    <cite className="font-heading text-2xl md:text-3xl text-white not-italic">
+                      {testimonials[current].author}
+                    </cite>
+                    <span className="font-sans text-[10px] tracking-[0.3em] uppercase text-luxury-gold font-medium">
+                      {testimonials[current].service}
+                    </span>
+                  </footer>
+                </blockquote>
+              </motion.div>
+            </AnimatePresence>
+
+          </div>
+
         </div>
-
-        {/* Staggered Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 items-start">
-          {testimonials.map((testimonial, index) => (
-            <motion.div 
-              key={testimonial.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ 
-                duration: 0.8, 
-                delay: index * 0.2,
-                ease: [0.25, 0.1, 0.25, 1] 
-              }}
-              className={`
-                relative p-8 md:p-12 bg-luxury-charcoal/20 border border-white/5 rounded-sm
-                group transition-all duration-700 hover:bg-luxury-charcoal/40
-                ${index === 1 ? 'md:translate-y-12' : ''} 
-                ${index === 2 ? 'md:translate-y-6' : ''}
-              `}
-            >
-              {/* Animated Border Glow Effect */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-luxury-gold/40 to-transparent"></div>
-                <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-luxury-gold/40 to-transparent"></div>
-              </div>
-
-              {/* Elegant Watermark */}
-              <div className="absolute top-8 left-8 text-7xl font-heading text-white/[0.03] pointer-events-none leading-none group-hover:text-luxury-gold/5 transition-colors duration-700">
-                &ldquo;
-              </div>
-
-              <blockquote className="relative z-10 h-full flex flex-col justify-between">
-                <p className="font-sans text-gray-300 text-lg md:text-xl leading-relaxed mb-10 font-light italic">
-                  &quot;{testimonial.quote}&quot;
-                </p>
-                
-                <footer className="mt-auto pt-8 border-t border-white/10">
-                  <div className={`font-heading text-2xl mb-1 transition-colors duration-500 ${testimonial.accent} group-hover:text-white`}>
-                    {testimonial.author}
-                  </div>
-                  <cite className="font-sans text-[10px] tracking-[0.2em] uppercase text-gray-500 not-italic font-medium">
-                    {testimonial.service}
-                  </cite>
-                </footer>
-              </blockquote>
-            </motion.div>
-          ))}
-        </div>
-
       </div>
     </section>
   );

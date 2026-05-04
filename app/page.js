@@ -6,6 +6,7 @@ import FeaturedServices from '@/components/sections/FeaturedServices';
 import Artists from '@/components/sections/Artists';
 import Testimonials from '@/components/sections/Testimonials';
 import FAQAccordion from '@/components/sections/FAQAccordion';
+import Locations from '@/components/sections/Locations';
 
 // GEO/SEO Metadata stays perfectly intact on the server
 export const metadata = {
@@ -27,6 +28,8 @@ export default function Home() {
 
       {/* 4. The Experts (Who does it) */}
       <Artists />
+
+      <Locations />
 
       {/* 5. The Social Proof (Trust generation) */}
       <Testimonials />

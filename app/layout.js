@@ -37,7 +37,7 @@ export default function RootLayout({ children }) {
             <div key="content" className="flex flex-col min-h-screen">
               <Navbar />
               {/* pt-24 offsets the content for the sticky navbar */}
-              <main className="flex-grow pt-24">
+              <main className="flex-grow flex flex-col">
                 {children}
               </main>
               <Footer />
