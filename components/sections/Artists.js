@@ -13,7 +13,7 @@ const journalItems = [
     date: "14 May MMXXVI",
     title: "Balayage or Foilage: A Manifesto on Light.",
     excerpt: "Discover the architectural differences between global balayage and foilage, and how our master artists curating luminosity.",
-    image: "https://images.unsplash.com/photo-1634449571010-02c2930787b6?q=80&w=1200&auto=format&fit=crop",
+    image: "/image/home/calixta-luxury-saloon-prayagraj.jpeg",
     href: "/journal/light-manifesto"
   },
   {

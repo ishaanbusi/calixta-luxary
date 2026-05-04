@@ -14,7 +14,7 @@ const defaultSlides = [
     label: "The Manifesto",
     title: "Redefining Luxury Grooming.",
     description: "A sanctuary of precision engineering and aesthetic mastery in the heart of Prayagraj.",
-    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=2000&auto=format&fit=crop",
+    image: "/image/home/calixta-luxury-saloon-prayagraj.jpeg",
     cta: "Reserve a Session",
     href: "/book"
   },
@@ -23,7 +23,7 @@ const defaultSlides = [
     label: "Color Alchemy",
     title: "Vibrant. Restorative. Bespoke.",
     description: "Global formulations from London and Milan, applied with architectural precision.",
-    image: "https://images.unsplash.com/photo-1595476108010-b4d1f10a5146?q=80&w=2000&auto=format&fit=crop",
+    image: "/image/home/calixta-luxury-saloon-prayagraj-banner.jpeg",
     cta: "Discover Alchemy",
     href: "/services#color"
   },
@@ -32,7 +32,7 @@ const defaultSlides = [
     label: "Bridal Couture",
     title: "Flawless High-Definition Artistry.",
     description: "Exclusive, private suite experiences curated for your most defining moments.",
-    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=2000&auto=format&fit=crop",
+    image: "/image/home/calixta-luxury-saloon-prayagraj-banner-1.jpeg",
     cta: "View Couture",
     href: "/services#bridal"
   }

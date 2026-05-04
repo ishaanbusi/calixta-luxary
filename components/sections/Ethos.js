@@ -107,7 +107,7 @@ export default function Ethos() {
               className="col-span-1 sm:col-span-2 sm:col-start-2 sm:row-start-1 sm:row-span-2 relative min-h-[300px] sm:min-h-full border border-white/5 overflow-hidden group"
             >
               <Image 
-                src="https://images.unsplash.com/photo-1522337660859-02fbefad4740?q=80&w=1000&auto=format&fit=crop" 
+                src="/image/home/calixta-bridal-makeup.jpeg" 
                 alt="Calixta Aesthetics" 
                 fill 
                 className="object-cover object-center grayscale-[40%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"

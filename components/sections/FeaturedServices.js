@@ -10,7 +10,7 @@ const services = [
     title: "Signature Styling",
     description: "Masterful cutting and structural styling tailored to your unique facial geometry.",
     price: "From ₹2,500",
-    image: "https://images.unsplash.com/photo-1620331311520-246422fd82f9?q=80&w=1200&auto=format&fit=crop",
+    image: "/image/home/calixta-luxury-saloon-prayagraj-banner-1.jpeg",
     colSpan: "lg:col-span-2", // Spans 2 columns
   },
   {
@@ -18,7 +18,7 @@ const services = [
     title: "Color Alchemy",
     description: "Balayage, foilage, and global corrections using elite European formulations.",
     price: "From ₹6,000",
-    image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=1200&auto=format&fit=crop",
+    image: "/image/home/calixta-luxury-saloon-prayagraj-banner.jpeg",
     colSpan: "lg:col-span-1", // Spans 1 column
   },
   {
@@ -26,7 +26,7 @@ const services = [
     title: "Restorative Therapies",
     description: "Deep reconstructive keratin and hydration therapies for mirror-like shine.",
     price: "From ₹8,000",
-    image: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1200&auto=format&fit=crop",
+    image: "/image/home/calixta-luxury-saloon-prayagraj.jpeg",
     colSpan: "lg:col-span-1", // Spans 1 column
   },
   {
@@ -34,7 +34,7 @@ const services = [
     title: "Bridal Couture",
     description: "Flawless high-definition artistry and up-dos for your most exclusive events.",
     price: "Bespoke Pricing",
-    image: "https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?q=80&w=1200&auto=format&fit=crop",
+    image: "/image/home/calixta-bridal-makeup.jpeg",
     colSpan: "lg:col-span-2", // Spans 2 columns
   }
 ];
