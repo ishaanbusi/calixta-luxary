@@ -103,7 +103,7 @@ export default function Location() {
               className="relative aspect-[4/5] md:aspect-[3/4] lg:aspect-[4/5] w-full overflow-hidden border border-white/5 bg-[#0a0a0c] group"
             >
               <Image 
-                src="https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=1200&auto=format&fit=crop" 
+                src="/image/home/calixta-prayagraj-location.jpeg" 
                 alt="Calixta Salon Interior" 
                 fill 
                 className="object-cover object-center grayscale-[40%] group-hover:grayscale-0 transition-all duration-[2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
