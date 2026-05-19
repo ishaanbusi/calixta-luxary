@@ -11,64 +11,19 @@ const DARK_BG = "rgba(8, 8, 9, 0.95)"; // Deep luxury black with slight transpar
 
 // ─── Luxury Nav Data ───────────────────────────────────────────────────────
 const navItems = [
-  {
-    name: "Services",
-    path: "/services",
-    type: "mega",
-    featured: {
-      title: "Bespoke Artistry",
-      description: "Discover our curated spectrum of high-end grooming and structural styling services.",
-      // Cinematic image for the mega-menu
-      image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=800&auto=format&fit=crop"
-    },
-    submenu: [
-      {
-        name: "Signature Styling",
-        path: "/services#styling",
-        description: "Architectural cutting tailored to your facial geometry.",
-        tag: "Core"
-      },
-      {
-        name: "Color Alchemy",
-        path: "/services#color",
-        description: "Balayage, foilage, and elite European formulations.",
-        tag: "Technical"
-      },
-      {
-        name: "Restorative Keratin",
-        path: "/services#keratin",
-        description: "Deep reconstructive therapies for mirror-like shine.",
-        tag: "Therapy"
-      },
-      {
-        name: "Aesthetic Spa",
-        path: "/services#spa",
-        description: "Sensory treatments for complete rejuvenation.",
-        tag: "Sensory"
-      },
-    ],
-  },
+  { name: "Services", path: "/services", type: "link" },
   {
     name: "Bridal",
     path: "/bridal",
     type: "simple",
     submenu: [
-      { name: "Bridal Couture Makeup", path: "/bridal/makeup" },
-      { name: "Pre-Bridal Packages", path: "/bridal/packages" },
-      { name: "On-Location Concierge", path: "/bridal/concierge" },
+      { name: "Bridal Makeup", path: "/services/bridal-makeup" },
+      { name: "Groom Makeup", path: "/services/groom-makeup" },
+      { name: "Party Makeup", path: "/services/party-makeup" },
     ],
   },
-  {
-    name: "The House",
-    path: "/house",
-    type: "simple",
-    submenu: [
-      { name: "Master Artists", path: "/house/artists" },
-      { name: "Our Manifesto", path: "/about" },
-      { name: "The Journal", path: "/journal" },
-    ],
-  },
-  { name: "Concierge", path: "/contact", type: "link" },
+  { name: "About", path: "/about", type: "link" },
+  { name: "Contact", path: "/contact", type: "link" },
 ];
 
 // ─── Desktop Mega-Menu (Cinematic Layout) ──────────────────────────────────
@@ -212,6 +167,7 @@ export default function Navbar() {
       {/* Dynamic CSS injected for complex hover/dropdown logic */}
       <style>{`
         /* Desktop Bridge/Panel Mechanics */
+        .nav-item-wrap { position: relative; }
         .dropdown-bridge {
           position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
           padding-top: 24px; opacity: 0; visibility: hidden; pointer-events: none;
@@ -307,9 +263,7 @@ export default function Navbar() {
                     </svg>
                   )}
                 </Link>
-                {item.submenu && (
-                  item.type === "mega" ? <MegaMenu item={item} closeMenu={closeMenu} /> : <SimpleDropdown item={item} closeMenu={closeMenu} />
-                )}
+                {item.submenu && <SimpleDropdown item={item} closeMenu={closeMenu} />}
               </div>
             ))}
           </div>
@@ -317,7 +271,7 @@ export default function Navbar() {
           {/* ── Right Action (Desktop) & Hamburger (Mobile) ── */}
           <div className="flex items-center gap-6 z-50">
             <Link 
-              href="/book" 
+              href="/contact" 
               className="hidden lg:inline-flex px-8 py-3 text-[10px] uppercase tracking-[0.2em] border border-white/20 text-white hover:border-luxury-gold hover:text-luxury-gold hover:bg-luxury-gold/5 transition-all duration-500"
             >
               Reserve
@@ -352,8 +306,8 @@ export default function Navbar() {
         
         {/* Mobile Sticky CTA */}
         <div className="p-6 border-t border-white/5 bg-[#050505]">
-          <Link
-            href="/book"
+            <Link
+            href="/contact"
             onClick={() => setMobileOpen(false)}
             className="flex justify-center w-full py-4 text-xs tracking-[0.3em] uppercase bg-white text-black font-medium hover:bg-luxury-gold transition-colors"
           >

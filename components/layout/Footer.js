@@ -18,7 +18,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-[#050505] border-t border-white/5 pt-24 md:pt-32 pb-8 overflow-hidden z-20">
+    <footer className="relative mt-auto bg-[#050505] border-t border-white/5 pt-24 md:pt-32 pb-8 overflow-hidden z-20">
       
       {/* ─── Ambient Grounding Light ─── */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80vw] h-[50vw] bg-luxury-gold rounded-full mix-blend-screen filter blur-[250px] opacity-[0.015] pointer-events-none" />
@@ -125,7 +125,7 @@ export default function Footer() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px" }}
           transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full overflow-hidden flex justify-center mb-12 select-none pointer-events-none"
+          className="pointer-events-none absolute inset-x-0 top-0 h-full flex justify-center items-center z-0 overflow-hidden"
         >
           <span className="font-heading text-[18vw] leading-[0.75] text-white/[0.02] tracking-tighter">
             CALIXTA

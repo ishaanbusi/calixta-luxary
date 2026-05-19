@@ -16,7 +16,7 @@ const defaultSlides = [
     description: "A sanctuary of precision engineering and aesthetic mastery in the heart of Prayagraj.",
     image: "/image/home/calixta-luxury-saloon-prayagraj.jpeg",
     cta: "Reserve a Session",
-    href: "/book"
+    href: "/contact"
   },
   {
     id: "s2",
