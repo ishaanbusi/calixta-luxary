@@ -1,212 +1,507 @@
 "use client";
 
+/**
+ * HeroSlider — Calixta Luxury Salon, Prayagraj / Allahabad, Uttar Pradesh
+ *
+ * LAYOUT FIX  : Three-row flex column (top-spacer | content | nav-bar) eliminates
+ *               all overlap between navbar, slide text, and navigation controls.
+ *               Safe-area insets + CSS custom property --navbar-height guard every edge.
+ * DESIGN      : Cinematic Ken-Burns, animated progress dots, film counter,
+ *               dual-gradient vignette, responsive type scale.
+ * SEO         : Semantic landmarks, h1 hierarchy, descriptive alt text, LCP-optimised loading.
+ * AEO         : JSON-LD SpeakableSpecification + LocalBusiness / BeautySalon schema.
+ * GEO         : Brand + dual-city entity signals (Prayagraj / Allahabad) in copy & schema.
+ */
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { motion, AnimatePresence } from "framer-motion";
 
-const SLIDE_DURATION = 7000; // Slower, more cinematic duration (7s)
+// ─── Constants ────────────────────────────────────────────────────────────────
+const SLIDE_DURATION = 7000;
+const EASE           = [0.22, 1, 0.36, 1];
 
-// Cinematic Mock Data (Can be replaced with props later)
+// ─── Slide Data ───────────────────────────────────────────────────────────────
 const defaultSlides = [
   {
-    id: "s1",
-    label: "The Manifesto",
-    title: "Redefining Luxury Grooming.",
-    description: "A sanctuary of precision engineering and aesthetic mastery in the heart of Prayagraj.",
-    image: "/image/home/calixta-luxury-saloon-prayagraj.jpeg",
-    cta: "Reserve a Session",
-    href: "/contact"
+    id:          "s1",
+   
+    title:       "Redefining Luxury Grooming",
+    description:
+      "Prayagraj’s premier luxury salon offering precision hair, skin, beauty, and wellness services in an intimate appointment only sanctuary located in the heart of Allahabad.",
+    image:       "/image/services/IMG_0106.JPG",
+    imageAlt:
+      "Interior of Calixta Luxury Salon in Prayagraj featuring editorial styling chairs, warm lighting, and premium grooming stations",
+    cta:         "Reserve a Session",
+    href:        "/contact",
+    speakable:
+      "Calixta Luxury Salon in Prayagraj, also known as Allahabad, Uttar Pradesh, is a premier destination for luxury hair, beauty, and wellness services.",
   },
   {
-    id: "s2",
-    label: "Color Alchemy",
-    title: "Vibrant. Restorative. Bespoke.",
-    description: "Global formulations from London and Milan, applied with architectural precision.",
-    image: "/image/home/calixta-luxury-saloon-prayagraj-banner.jpeg",
-    cta: "Discover Alchemy",
-    href: "/services#color"
+    id:          "s2",
+    
+    title:       "Vibrant. Restorative. Bespoke Colour",
+    description:
+      "Premium international colour formulations inspired by London and Milan, delivered by expert colourists specialising in balayage, highlights, gloss toning, and complete hair transformations.",
+    image:       "/image/services/DSC01296.jpeg",
+    imageAlt:
+      "Professional hair colouring session at Calixta Luxury Salon in Prayagraj showcasing precision balayage techniques",
+    cta:         "Explore Colour Services",
+    href:        "/services#color",
+    speakable:
+      "Calixta in Prayagraj offers balayage, highlights, toning, and luxury colour transformations using globally inspired techniques and premium formulations.",
   },
   {
-    id: "s3",
-    label: "Bridal Couture",
-    title: "Flawless High-Definition Artistry.",
-    description: "Exclusive, private suite experiences curated for your most defining moments.",
-    image: "/image/home/calixta-luxury-saloon-prayagraj-banner-1.jpeg",
-    cta: "View Couture",
-    href: "/services#bridal"
-  }
+    id:          "s3",
+    title:       "Flawless Bridal Artistry",
+    description:
+      "Luxury bridal experiences featuring HD makeup, customised hair styling, and pre wedding skincare rituals thoughtfully curated for modern brides in Prayagraj and Allahabad.",
+    image:       "/image/services/DSC01187.jpeg",
+    imageAlt:
+      "Luxury bridal hair and makeup artistry at Calixta Luxury Salon in Prayagraj inside an exclusive bridal suite",
+    cta:         "View Bridal Packages",
+    href:        "/services#bridal",
+    speakable:
+      "Calixta offers luxury bridal makeup, bespoke hairstyling, and premium pre wedding beauty services for brides across Prayagraj and Allahabad.",
+  },
 ];
+// ─── JSON-LD Schemas (AEO + GEO) ─────────────────────────────────────────────
+const localBusinessSchema = {
+  "@context":  "https://schema.org",
+  "@type":     ["BeautySalon", "LocalBusiness"],
+  name:        "Calixta Luxury Salon",
+  alternateName: ["Calixta Salon Prayagraj", "Calixta Allahabad"],
+  description:
+    "Prayagraj's (Allahabad's) premier luxury salon offering precision hair colouring, bridal makeup, skin treatments, and wellness services in Uttar Pradesh.",
+  url:         "https://calixta.in",
+  telephone:   "",
+  priceRange:  "₹₹₹",
+  address: {
+    "@type":           "PostalAddress",
+    addressLocality:   "Prayagraj",
+    alternateName:     "Allahabad",
+    addressRegion:     "Uttar Pradesh",
+    addressCountry:    "IN",
+  },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name:    "Salon Services",
+    itemListElement: [
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Hair Colouring & Balayage" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Bridal Makeup & Hair Styling" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Skin & Facial Treatments" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Precision Hair Cutting" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Pre-Wedding Skincare Rituals" } },
+    ],
+  },
+};
 
+const speakableSchema = {
+  "@context": "https://schema.org",
+  "@type":    "WebPage",
+  speakable: {
+    "@type":      "SpeakableSpecification",
+    cssSelector:  ["[data-speakable]"],
+  },
+  about: localBusinessSchema,
+};
+
+// ─── ProgressBar ──────────────────────────────────────────────────────────────
+function ProgressBar({ active, playing, duration }) {
+  return (
+    <div
+      role="progressbar"
+      aria-hidden="true"
+      className="absolute inset-0 overflow-hidden"
+    >
+      {active && playing && (
+        <motion.div
+          key="progress-playing"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: duration / 1000, ease: "linear" }}
+          style={{ transformOrigin: "left" }}
+          className="h-full w-full bg-luxury-gold"
+        />
+      )}
+      {active && !playing && (
+        <div className="h-full w-full bg-luxury-gold" />
+      )}
+    </div>
+  );
+}
+
+// ─── FilmCounter ──────────────────────────────────────────────────────────────
+function FilmCounter({ current, total }) {
+  return (
+    <div
+      aria-label={`Slide ${current + 1} of ${total}`}
+      className="font-heading text-[10px] md:text-[13px] text-white/40 italic tracking-[0.3em] tabular-nums select-none leading-none"
+    >
+      <span className="text-white/70">{String(current + 1).padStart(2, "0")}</span>
+      <span className="mx-2 text-white/20">/</span>
+      <span>{String(total).padStart(2, "0")}</span>
+    </div>
+  );
+}
+
+// ─── HeroSlider ───────────────────────────────────────────────────────────────
 export default function HeroSlider({ slides = defaultSlides }) {
-  const [current, setCurrent] = useState(0);
+  const [current,   setCurrent]   = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const timerRef = useRef(null);
+  const timerRef    = useRef(null);
   const touchStartX = useRef(null);
 
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
+  // Navigation
   const goTo = useCallback((index) => {
     setCurrent(index);
     clearTimeout(timerRef.current);
   }, []);
 
-  // Handle auto-advance
+  const goPrev = useCallback(
+    () => goTo((current - 1 + slides.length) % slides.length),
+    [current, goTo, slides.length]
+  );
+  const goNext = useCallback(
+    () => goTo((current + 1) % slides.length),
+    [current, goTo, slides.length]
+  );
+
+  // Auto-advance
   useEffect(() => {
     if (!isPlaying || slides.length === 0) return;
-    timerRef.current = setTimeout(() => {
-      setCurrent((c) => (c + 1) % slides.length);
-    }, SLIDE_DURATION);
+    timerRef.current = setTimeout(
+      () => setCurrent((c) => (c + 1) % slides.length),
+      SLIDE_DURATION
+    );
     return () => clearTimeout(timerRef.current);
   }, [current, isPlaying, slides.length]);
 
-  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
-  const handleTouchEnd = (e) => {
-    if (touchStartX.current === null || slides.length === 0) return;
+  // Keyboard
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "ArrowLeft")  goPrev();
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === " ")          { e.preventDefault(); setIsPlaying((p) => !p); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [goPrev, goNext]);
+
+  // Pause when tab hidden
+  useEffect(() => {
+    const onChange = () => setIsPlaying(!document.hidden);
+    document.addEventListener("visibilitychange", onChange);
+    return () => document.removeEventListener("visibilitychange", onChange);
+  }, []);
+
+  // Touch
+  const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+  const onTouchEnd   = (e) => {
+    if (touchStartX.current === null) return;
     const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 50) {
-      goTo(diff > 0
-        ? (current + 1) % slides.length
-        : (current - 1 + slides.length) % slides.length
-      );
-    }
+    if (Math.abs(diff) > 50) diff > 0 ? goNext() : goPrev();
     touchStartX.current = null;
   };
 
-  if (!slides || slides.length === 0) {
-    return <div className="w-full h-screen bg-luxury-black" />;
-  }
+  if (!slides?.length) return <div className="w-full h-screen bg-luxury-black" aria-hidden />;
 
   const slide = slides[current];
 
   return (
-    <section
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      className="relative w-full h-[100svh] min-h-[600px] bg-luxury-black overflow-hidden flex flex-col"
-    >
-      {/* ─── Cinematic Backgrounds ─── */}
-      {slides.map((s, index) => {
-        const isActive = index === current;
-        return (
-          <div
-            key={s.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out z-0 ${
-              isActive ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            {/* Subtle "Ken Burns" zoom effect on active slide */}
-            <motion.div
-              initial={false}
-              animate={isActive ? { scale: 1.05 } : { scale: 1 }}
-              transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
-              className="absolute inset-0 w-full h-full"
+    <>
+      {/* ── JSON-LD ─────────────────────────────────────────────────────────── */}
+      <Script
+        id="schema-local-business"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      />
+      <Script
+        id="schema-speakable"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
+      />
+
+      {/*
+        ══════════════════════════════════════════════════════════════════════
+        LAYOUT ARCHITECTURE  (fixes all overlapping issues)
+        ══════════════════════════════════════════════════════════════════════
+
+        The section is a flex column with THREE explicit rows:
+
+          Row 1 — [top-spacer]
+                  Height = navbar height + safe-area-inset-top.
+                  Pushes content below the navbar; nothing ever clips under it.
+
+          Row 2 — [content area]   flex-grow → takes all remaining space
+                  Vertically centred with justify-center so text sits in
+                  the visual middle of the image, not jammed at bottom.
+                  Has its own bottom padding to stay clear of Row 3.
+
+          Row 3 — [navigation bar]   flex-shrink-0, fixed height
+                  Always at bottom, never overlaps content.
+                  Own padding above it (pt-4) keeps arrows from touching text.
+
+        This is purely in-flow layout — no absolute positioning for content —
+        so nothing can overlap regardless of viewport height or font scaling.
+
+        CSS custom property approach for navbar height:
+          Set  --navbar-height  in your root layout or globals.css.
+          Default here is 80px (change to match your actual header).
+      ══════════════════════════════════════════════════════════════════════
+      */}
+      <section
+        role="region"
+        aria-label="Calixta Luxury Salon — Hero Showcase"
+        aria-roledescription="carousel"
+        aria-live="polite"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        style={{ "--navbar-h": "var(--navbar-height, 80px)" }}
+        className="
+          relative w-full bg-luxury-black overflow-hidden
+          flex flex-col
+          h-[100svh] min-h-[560px]
+        "
+      >
+        {/* ── Slide Backgrounds (absolutely positioned, behind everything) ──── */}
+        {slides.map((s, index) => {
+          const isActive = index === current;
+          return (
+            <div
+              key={s.id}
+              aria-hidden={!isActive}
+              className={`
+                absolute inset-0 z-0
+                transition-opacity duration-1000 ease-in-out
+                ${isActive ? "opacity-100" : "opacity-0"}
+              `}
             >
-              <Image
-                src={s.image}
-                alt={s.title}
-                fill
-                priority={index === 0}
-                className="object-cover object-center grayscale-[20%]"
-                sizes="100vw"
-              />
-            </motion.div>
-            
-            {/* High-Fashion Vignette Overlays */}
-            {/* Bottom gradient for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-luxury-black via-black/40 to-transparent z-10" />
-            
-            {/* NEW: Top gradient shadow to protect the Logo and Navbar contrast */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/90 via-black/40 to-transparent h-48 md:h-64 z-10" />
-            
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#000_150%)] z-10" />
-          </div>
-        );
-      })}
-
-      {/* ─── Editorial Text Overlay ─── */}
-      {/* NEW: Added pt-32 md:pt-48 to force space away from the header */}
-      <div className="relative z-20 flex-grow max-w-[1440px] mx-auto w-full px-6 lg:px-12 flex flex-col justify-end pb-32 md:pb-40 pt-22 md:pt-38">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-2xl"
-          >
-            <span className="flex items-center gap-4 text-luxury-gold font-sans text-[10px] md:text-xs tracking-[0.4em] uppercase mb-6 font-medium">
-              <span className="w-8 h-[1px] bg-luxury-gold"></span>
-              {slide.label}
-            </span>
-            
-            <h2 className="font-heading text-5xl md:text-7xl lg:text-8xl text-white leading-[0.95] tracking-tight mb-6 font-light drop-shadow-lg">
-              {slide.title}
-            </h2>
-            
-            <p className="font-sans text-gray-300 text-sm md:text-lg font-light leading-relaxed mb-10 max-w-lg">
-              {slide.description}
-            </p>
-
-            <Link
-              href={slide.href}
-              className="group inline-flex items-center justify-center gap-4 border border-white/20 bg-white/5 backdrop-blur-md text-white px-10 py-4 text-xs md:text-sm tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white hover:text-black"
-            >
-              {slide.cta}
-              <span className="transform transition-transform duration-500 group-hover:translate-x-1">→</span>
-            </Link>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* ─── Minimalist Navigation Controls ─── */}
-      {/* <div className="absolute bottom-8 md:bottom-12 left-6 lg:left-12 z-30 flex items-center gap-8">
-        
-        <button
-          onClick={() => setIsPlaying((p) => !p)}
-          className="font-sans text-[9px] uppercase tracking-[0.3em] text-white/50 hover:text-white transition-colors"
-        >
-          {isPlaying ? "Pause" : "Play"}
-        </button>
-
-        <div className="flex gap-3 items-center">
-          {slides.map((_, i) => {
-            const isActive = i === current;
-            return (
-              <button
-                key={`nav-${i}`}
-                onClick={() => goTo(i)}
-                className="relative h-[2px] rounded-full overflow-hidden transition-all duration-500 bg-white/20"
-                style={{ width: isActive ? "48px" : "16px" }}
-                aria-label={`Go to slide ${i + 1}`}
+              {/* Ken Burns */}
+              <motion.div
+                initial={false}
+                animate={isActive ? { scale: 1.06 } : { scale: 1.0 }}
+                transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
+                className="absolute inset-0"
               >
-                {isActive && isPlaying && (
-                  <motion.div
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
-                    className="absolute top-0 left-0 h-full bg-luxury-gold"
-                  />
-                )}
-                {isActive && !isPlaying && (
-                  <div className="absolute top-0 left-0 h-full w-full bg-luxury-gold" />
-                )}
-              </button>
-            );
-          })}
+                <Image
+                  src={s.image}
+                  alt={s.imageAlt}
+                  fill
+                  priority={index === 0}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "low"}
+                  className="object-cover object-center"
+                  sizes="100vw"
+                  quality={90}
+                />
+              </motion.div>
+
+              {/* Bottom gradient — text legibility */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 pointer-events-none" />
+              {/* Top gradient — navbar legibility */}
+              <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-black/75 to-transparent z-10 pointer-events-none" />
+              {/* Radial edge vignette */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_35%,_rgba(0,0,0,0.55)_100%)] z-10 pointer-events-none" />
+              {/* Brand warm tint */}
+              <div className="absolute inset-0 bg-[#8B6914]/[0.04] z-10 pointer-events-none" />
+            </div>
+          );
+        })}
+
+        {/* ════════════════════════════════════════════════════════════════════
+            ROW 1 — Navbar spacer
+            Reserves exactly as much space as the navbar occupies so no
+            content ever renders behind/under it.
+            Update --navbar-height in globals.css to match your header.
+        ════════════════════════════════════════════════════════════════════ */}
+        <div
+          aria-hidden
+          className="relative z-20 shrink-0 w-full"
+          style={{ height: "calc(var(--navbar-h) + env(safe-area-inset-top, 0px))" }}
+        />
+
+        {/* ════════════════════════════════════════════════════════════════════
+            ROW 2 — Slide content
+            flex-grow fills remaining space; content is bottom-aligned inside
+            so it sits in the lower-third of the frame (cinematic convention).
+            pb-6 / pb-8 keeps it safely above Row 3.
+        ════════════════════════════════════════════════════════════════════ */}
+        <div className="relative z-20 grow flex flex-col justify-end px-6 md:px-10 lg:px-16 pb-6 md:pb-8 max-w-[1440px] mx-auto w-full">
+          <AnimatePresence mode="wait">
+            <motion.article
+              key={current}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.8, ease: EASE }}
+              aria-label={`Slide: ${slide.title}`}
+              className="w-full max-w-xl lg:max-w-2xl"
+            >
+              {/* Eyebrow */}
+              <p className="flex items-center gap-3 text-luxury-gold font-sans text-[9px] md:text-[11px] tracking-[0.4em] uppercase mb-4 md:mb-5 font-medium select-none leading-none">
+                <span aria-hidden="true" className="w-8 h-px bg-luxury-gold shrink-0" />
+                <span>{slide.eyebrow ?? slide.label}</span>
+              </p>
+
+              {/* H1 — responsive scale that never overflows */}
+              <h1 className="
+                font-heading font-light text-white leading-[0.93] tracking-tight
+                mb-4 md:mb-5
+                text-[clamp(2.4rem,6vw,5.5rem)]
+                drop-shadow-lg
+              ">
+                {slide.title}
+              </h1>
+
+              {/* Description — AEO speakable */}
+              <p
+                data-speakable
+                className="
+                  font-sans font-light text-gray-300/85 leading-relaxed
+                  mb-7 md:mb-9 max-w-md
+                  text-[clamp(0.8rem,1.8vw,1.05rem)]
+                "
+              >
+                {slide.description}
+              </p>
+
+              {/* CTA */}
+              <Link
+                href={slide.href}
+                aria-label={`${slide.cta} — Calixta Luxury Salon, Prayagraj`}
+                className="
+                  group inline-flex items-center gap-4
+                  border border-white/25 bg-white/5 backdrop-blur-sm
+                  text-white
+                  px-8 py-3.5 md:px-10 md:py-4
+                  text-[10px] md:text-[12px] tracking-[0.22em] uppercase
+                  transition-all duration-500
+                  hover:bg-luxury-gold hover:border-luxury-gold hover:text-black
+                  focus-visible:outline focus-visible:outline-2 focus-visible:outline-luxury-gold
+                "
+              >
+                {slide.cta}
+                <span aria-hidden="true" className="transition-transform duration-500 group-hover:translate-x-1.5">
+                  →
+                </span>
+              </Link>
+            </motion.article>
+          </AnimatePresence>
         </div>
 
-        <div className="font-heading text-sm text-white/50 italic tracking-widest hidden md:block">
-          0{current + 1} <span className="text-white/20 mx-1">/</span> 0{slides.length}
+        {/* ════════════════════════════════════════════════════════════════════
+            ROW 3 — Navigation controls
+            Fixed height, shrink-0, sits below content row.
+            Padding above (pt-4) and at bottom accounts for safe-area.
+            Never overlaps Row 2 because it's in normal flow after it.
+        ════════════════════════════════════════════════════════════════════ */}
+        <div
+          role="group"
+          aria-label="Slideshow controls"
+          className="
+            relative z-20 shrink-0 w-full
+            max-w-[1440px] mx-auto
+            px-6 md:px-10 lg:px-16
+            pt-4 pb-6 md:pb-8
+            flex items-center justify-between gap-4
+          "
+          style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
+        >
+          {/* Left — Play/Pause + Dots */}
+          <div className="flex items-center gap-4 md:gap-6 min-w-0">
+            {/* Play / Pause */}
+            <button
+              onClick={() => setIsPlaying((p) => !p)}
+              aria-label={isPlaying ? "Pause slideshow" : "Play slideshow"}
+              className="
+                font-sans text-[8px] md:text-[9px] uppercase tracking-[0.35em]
+                text-white/35 hover:text-white transition-colors duration-300 shrink-0
+                focus-visible:outline focus-visible:outline-1 focus-visible:outline-white/40
+              "
+            >
+              {isPlaying ? "Pause" : "Play"}
+            </button>
+
+            {/* Progress Dots */}
+            <nav aria-label="Slide navigation" className="flex items-center gap-2.5">
+              {slides.map((s, i) => {
+                const isActive = i === current;
+                return (
+                  <button
+                    key={`dot-${s.id}`}
+                    onClick={() => goTo(i)}
+                    aria-label={`Go to slide ${i + 1}: ${s.title}`}
+                    aria-current={isActive ? "true" : undefined}
+                    className={`
+                      relative h-[2px] overflow-hidden transition-all duration-500
+                      focus-visible:outline focus-visible:outline-2 focus-visible:outline-luxury-gold
+                      ${isActive ? "w-10 md:w-12" : "w-3.5 md:w-4 bg-white/20 hover:bg-white/40"}
+                    `}
+                  >
+                    <ProgressBar active={isActive} playing={isPlaying} duration={SLIDE_DURATION} />
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Right — Counter + Arrows */}
+          <div className="flex items-center gap-3 md:gap-5 shrink-0">
+            <FilmCounter current={current} total={slides.length} />
+
+            {/* Arrows — md and above only */}
+            <div className="hidden md:flex items-center gap-2">
+              <button
+                onClick={goPrev}
+                aria-label="Previous slide"
+                className="
+                  w-8 h-8 md:w-9 md:h-9
+                  border border-white/20 flex items-center justify-center
+                  text-white/45 hover:text-white hover:border-white/50
+                  transition-all duration-300 text-xs
+                  focus-visible:outline focus-visible:outline-1 focus-visible:outline-white/40
+                "
+              >
+                ←
+              </button>
+              <button
+                onClick={goNext}
+                aria-label="Next slide"
+                className="
+                  w-8 h-8 md:w-9 md:h-9
+                  border border-white/20 flex items-center justify-center
+                  text-white/45 hover:text-white hover:border-white/50
+                  transition-all duration-300 text-xs
+                  focus-visible:outline focus-visible:outline-1 focus-visible:outline-white/40
+                "
+              >
+                →
+              </button>
+            </div>
+          </div>
         </div>
-      </div> */}
-    </section>
+
+        {/* ── Visually-hidden SEO / GEO block ─────────────────────────────── */}
+        <div className="sr-only">
+          <h2>About Calixta Luxury Salon, Prayagraj (Allahabad), Uttar Pradesh</h2>
+          <p>
+            Calixta is the premier luxury hair and beauty salon in Prayagraj, also known as Allahabad,
+            Uttar Pradesh, India. Calixta offers expert hair colouring, balayage, precision cuts,
+            bridal makeup artistry, skin treatments, and exclusive wellness rituals in a private,
+            appointment-only environment.
+          </p>
+          <ul>
+            {slides.map((s) => (
+              <li key={`sr-${s.id}`}>
+                <strong>{s.title}</strong>: {s.speakable ?? s.description}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    </>
   );
 }
