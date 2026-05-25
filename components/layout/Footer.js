@@ -78,13 +78,13 @@ export default function Footer() {
               <div className="space-y-2">
                 <span className="block font-sans text-[9px] text-gray-600 uppercase tracking-widest">Location</span>
                 <p className="text-gray-300 font-sans text-xs md:text-sm leading-relaxed font-light">
-                  Premium District, Civil Lines<br />Prayagraj, UP 211001
+                  Clive Rd, Near Axis Bank, Civil Lines,<br /> Prayagraj, Uttar Pradesh 211001
                 </p>
               </div>
               <div className="space-y-2">
                 <span className="block font-sans text-[9px] text-gray-600 uppercase tracking-widest">Inquiries</span>
-                <a href="tel:+919876543210" className="block text-gray-300 font-sans text-xs md:text-sm hover:text-luxury-gold transition-colors font-light">
-                  +91 98765 43210
+                <a href="tel:+917355465724" className="block text-gray-300 font-sans text-xs md:text-sm hover:text-luxury-gold transition-colors font-light">
+                  +91 7355465724
                 </a>
               </div>
             </address>

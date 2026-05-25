@@ -47,9 +47,9 @@ export default function ContactPage() {
               className="mt-24 border-t border-white/10 pt-12"
             >
               <h4 className="text-[10px] uppercase tracking-[0.3em] text-gray-500 mb-6">Flagship Sanctuary</h4>
-              <p className="text-lg font-light text-white">Civil Lines, Prayagraj, UP</p>
+              <p className="text-lg font-light text-white">Clive Rd, Near Axis Bank, Civil Lines, Prayagraj, Uttar Pradesh, Pincode: 211001</p>
               <Link href="tel:+919876543210" className="text-luxury-gold hover:text-white transition-colors duration-300">
-                +91 98765 43210
+                +91 7355465724
               </Link>
             </motion.div>
           </div>

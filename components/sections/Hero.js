@@ -31,7 +31,7 @@ const defaultSlides = [
     title:       "Redefining Luxury Grooming",
     description:
       "Prayagraj’s premier luxury salon offering precision hair, skin, beauty, and wellness services in an intimate appointment only sanctuary located in the heart of Allahabad.",
-    image:       "/image/services/IMG_0106.JPG",
+    image:       "/image/services/IMG_1944.JPG",
     imageAlt:
       "Interior of Calixta Luxury Salon in Prayagraj featuring editorial styling chairs, warm lighting, and premium grooming stations",
     cta:         "Reserve a Session",
